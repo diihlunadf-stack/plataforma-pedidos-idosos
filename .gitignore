@@ -1,0 +1,8 @@
+# Arquivos de sistema e temporários
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc
+.vercel/
+lista_compras_idoso.jpg

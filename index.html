@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Compra Fácil – Plataforma de Pedidos Acessível</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR MINIMALISTA -->
+  <header class="platform-topbar">
+    <div class="platform-brand">
+      <span class="uninter-badge">UNINTER</span>
+      <h1>Compra Fácil • Plataforma Acessível</h1>
+    </div>
+
+    <nav class="mode-switcher" aria-label="Alternar visão">
+      <button class="mode-btn active" data-mode="app" onclick="alternarModoPlataforma('app')">
+        📱 Aplicativo
+      </button>
+      <button class="mode-btn" data-mode="mercado" onclick="alternarModoPlataforma('mercado')">
+        🏪 Supermercado
+        <span class="badge-counter" id="partnerOrdersBadge">1</span>
+      </button>
+      <button class="mode-btn" data-mode="projeto" onclick="alternarModoPlataforma('projeto')">
+        📊 Dados do Projeto
+      </button>
+    </nav>
+  </header>
+
+  <main class="workspace-container">
+
+    <!-- ======================================================================
+         VISÃO 1: APLICATIVO DE CELULAR (DESIGN CLEAN E DESPOLUÍDO)
+         ====================================================================== -->
+    <section id="view-app" class="view-panel active">
+
+      <div class="phone-device" role="application" aria-label="Aplicativo Compra Fácil">
+        <!-- STATUS BAR DO CELULAR -->
+        <div class="phone-statusbar">
+          <span>14:30</span>
+          <span>📶 🔋</span>
+        </div>
+
+        <!-- CABEÇALHO CLEAN DO APP -->
+        <div class="app-header">
+          <div class="brand-title" onclick="irParaTelaApp('screen-home')">
+            <div class="brand-logo-dot">🛒</div>
+            <h2>Compra Fácil</h2>
+          </div>
+
+          <div class="header-controls">
+            <button class="icon-pill-btn" onclick="alternarTamanhoLetra()" id="fontToggleBtn" title="Aumentar letra">
+              A+
+            </button>
+            <button class="icon-pill-btn" onclick="ouvirTelaAtual()" title="Ouvir tela">
+              🔊
+            </button>
+          </div>
+        </div>
+
+        <!-- CONTEÚDO DAS TELAS -->
+        <div class="app-screen-container">
+
+          <!-- TELA 1: INÍCIO (APENAS 2 AÇÕES PRINCIPAIS CLARAS E ELEGANTES) -->
+          <div id="screen-home" class="app-screen active">
+            <div class="screen-heading">
+              <h3 id="homeGreetingName">Olá, Dona Maria</h3>
+              <p id="homeGreetingAddress">📍 Rua das Acácias, 45 – Centro</p>
+            </div>
+
+            <!-- BOTÃO PRINCIPAL DESTAQUE: FOTOGRAFAR LISTA -->
+            <button class="action-card-primary" onclick="irParaTelaApp('screen-camera')">
+              <div class="action-card-icon">📷</div>
+              <div>
+                <h4>Fotografar Lista</h4>
+                <p>Envie uma foto da sua lista escrita no papel</p>
+              </div>
+            </button>
+
+            <!-- BOTÃO SECUNDÁRIO CLEAN: ESCOLHER PRODUTOS -->
+            <button class="action-card-secondary" onclick="irParaTelaApp('screen-form')">
+              <div class="secondary-icon-box">🛍️</div>
+              <div>
+                <h4>Escolher Produtos</h4>
+                <p>Toque nos itens para montar sua compra</p>
+              </div>
+            </button>
+          </div>
+
+          <!-- TELA 2: FOTOGRAFAR LISTA (OCR) -->
+          <div id="screen-camera" class="app-screen">
+            <button class="btn-text-back" onclick="irParaTelaApp('screen-home')">
+              ← Voltar
+            </button>
+
+            <div class="screen-heading">
+              <h3>Foto da Lista</h3>
+              <p>Escolha um exemplo ou envie sua foto</p>
+            </div>
+
+            <div class="notebook-card">
+              <canvas id="handwrittenCanvas" width="320" height="250"></canvas>
+
+              <div class="preset-pills">
+                <button type="button" class="preset-pill selected" onclick="selecionarListaExemplo(0)">Lista 1</button>
+                <button type="button" class="preset-pill" onclick="selecionarListaExemplo(1)">Lista 2</button>
+                <button type="button" class="preset-pill" onclick="selecionarListaExemplo(2)">Lista 3</button>
+              </div>
+            </div>
+
+            <div id="ocrStatusBox" class="ocr-status-toast">
+              <span>🔍</span>
+              <span id="ocrStepsContent">Lendo os itens da imagem...</span>
+            </div>
+
+            <button class="btn-primary-clean" onclick="executarReconhecimentoOCR(false)">
+              ✨ Ler Lista Automaticamente
+            </button>
+
+            <label class="btn-outline-clean" style="cursor:pointer;">
+              📤 Enviar Foto do Aparelho
+              <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="processarUploadImagemReal(event)" />
+            </label>
+          </div>
+
+          <!-- TELA 3: ESCOLHER PRODUTOS NA TELA -->
+          <div id="screen-form" class="app-screen">
+            <button class="btn-text-back" onclick="irParaTelaApp('screen-home')">
+              ← Voltar
+            </button>
+
+            <div class="screen-heading">
+              <h3>Produtos</h3>
+              <p>Toque em adicionar nos itens desejados</p>
+            </div>
+
+            <div class="category-chips">
+              <button class="cat-chip active" data-cat="mercearia" onclick="selecionarCategoria('mercearia')">Mercearia</button>
+              <button class="cat-chip" data-cat="padaria" onclick="selecionarCategoria('padaria')">Padaria</button>
+              <button class="cat-chip" data-cat="hortifruti" onclick="selecionarCategoria('hortifruti')">Feira</button>
+              <button class="cat-chip" data-cat="carnes" onclick="selecionarCategoria('carnes')">Carnes</button>
+              <button class="cat-chip" data-cat="limpeza" onclick="selecionarCategoria('limpeza')">Limpeza</button>
+            </div>
+
+            <div id="quickProductsGrid" class="clean-list"></div>
+
+            <button class="btn-primary-clean" onclick="irParaTelaApp('screen-review')">
+              Ver Lista (<span id="formCartCountBadge">0</span>)
+            </button>
+          </div>
+
+          <!-- TELA 4: CONFERÊNCIA DA LISTA -->
+          <div id="screen-review" class="app-screen">
+            <button class="btn-text-back" onclick="irParaTelaApp('screen-home')">
+              ← Início
+            </button>
+
+            <div class="screen-heading">
+              <h3>Sua Lista</h3>
+              <p id="ocrSummaryBanner">Confira as quantidades antes de continuar</p>
+            </div>
+
+            <div id="cartItemsContainer" class="clean-list"></div>
+
+            <div class="total-bar-clean">
+              <span>Total estimado</span>
+              <strong id="reviewTotalValue">R$ 0,00</strong>
+            </div>
+
+            <button class="btn-primary-clean" onclick="irParaTelaApp('screen-checkout')">
+              Continuar para Entrega →
+            </button>
+
+            <button class="btn-outline-clean" onclick="irParaTelaApp('screen-form')">
+              + Adicionar mais itens
+            </button>
+          </div>
+
+          <!-- TELA 5: SUPERMERCADO E PAGAMENTO -->
+          <div id="screen-checkout" class="app-screen">
+            <button class="btn-text-back" onclick="irParaTelaApp('screen-review')">
+              ← Voltar à lista
+            </button>
+
+            <div class="screen-heading">
+              <h3>Finalizar Pedido</h3>
+              <p>Supermercado próximo e pagamento na entrega</p>
+            </div>
+
+            <div id="partnerMarketsList" class="clean-list"></div>
+
+            <div class="clean-field">
+              <label>Forma de pagamento na entrega</label>
+              <div id="paymentMethodsList" class="payment-pills-grid"></div>
+            </div>
+
+            <div id="checkoutSummaryTotals" class="total-bar-clean"></div>
+
+            <button class="btn-primary-clean" onclick="enviarPedidoAoSupermercado()">
+              Confirmar Pedido
+            </button>
+          </div>
+
+          <!-- TELA 6: ACOMPANHAMENTO DO PEDIDO -->
+          <div id="screen-tracking" class="app-screen">
+            <div class="screen-heading">
+              <h3>Meu Pedido</h3>
+              <p>Acompanhe o andamento da sua entrega</p>
+            </div>
+
+            <div id="trackingContentBox" class="clean-list"></div>
+
+            <div class="clean-timeline" style="margin-top:4px;">
+              <span style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">Avalie sua experiência</span>
+              <div class="rating-row">
+                <button class="rate-pill" data-score="7" onclick="selecionarNotaAvaliacao(7)">7</button>
+                <button class="rate-pill" data-score="8" onclick="selecionarNotaAvaliacao(8)">8</button>
+                <button class="rate-pill" data-score="9" onclick="selecionarNotaAvaliacao(9)">9</button>
+                <button class="rate-pill selected" data-score="10" onclick="selecionarNotaAvaliacao(10)">10</button>
+              </div>
+              <button class="btn-outline-clean" onclick="salvarAvaliacaoIdoso()" style="padding:10px;">
+                Enviar Nota
+              </button>
+              <div id="ratingFeedbackSaved" style="display:none; font-size:0.88rem; color:var(--primary-dark); font-weight:600; text-align:center;"></div>
+            </div>
+          </div>
+
+          <!-- TELA 7: MEUS DADOS E ENDEREÇO -->
+          <div id="screen-profile" class="app-screen">
+            <div class="screen-heading">
+              <h3>Meu Endereço</h3>
+              <p>Dados salvos para suas entregas</p>
+            </div>
+
+            <div class="clean-field">
+              <label for="inputNomeIdoso">Nome</label>
+              <input id="inputNomeIdoso" type="text" />
+            </div>
+
+            <div class="clean-field">
+              <label for="inputTelefoneIdoso">Telefone</label>
+              <input id="inputTelefoneIdoso" type="text" />
+            </div>
+
+            <div class="clean-field">
+              <label for="inputEnderecoIdoso">Endereço</label>
+              <input id="inputEnderecoIdoso" type="text" />
+            </div>
+
+            <div class="clean-field">
+              <label for="inputReferenciaIdoso">Referência de Entrega</label>
+              <input id="inputReferenciaIdoso" type="text" />
+            </div>
+
+            <button class="btn-primary-clean" onclick="salvarCadastroIdoso()">
+              Salvar Dados
+            </button>
+          </div>
+
+        </div>
+
+        <!-- NAVEGAÇÃO INFERIOR CLEAN E INTUITIVA -->
+        <nav class="app-bottom-nav" aria-label="Menu principal">
+          <button class="nav-tab-btn active" id="nav-home" onclick="irParaTelaApp('screen-home')">
+            <span class="nav-icon">🏠</span>
+            <span>Início</span>
+          </button>
+          <button class="nav-tab-btn" id="nav-tracking" onclick="irParaTelaApp('screen-tracking')">
+            <span class="nav-icon">📦</span>
+            <span>Pedido</span>
+          </button>
+          <button class="nav-tab-btn" id="nav-profile" onclick="irParaTelaApp('screen-profile')">
+            <span class="nav-icon">👤</span>
+            <span>Perfil</span>
+          </button>
+        </nav>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         VISÃO 2: PAINEL DOS SUPERMERCADOS PARCEIROS
+         ====================================================================== -->
+    <section id="view-mercado" class="view-panel">
+      <div class="wide-dashboard">
+        <div class="dashboard-card">
+          <div class="dashboard-header">
+            <div>
+              <h2>🏪 Painel do Supermercado Parceiro</h2>
+              <p style="color:var(--text-secondary); font-size:0.92rem;">
+                Recebimento de pedidos organizados via leitura de imagem (OCR) e confirmação de entrega.
+              </p>
+            </div>
+          </div>
+          <div id="partnerOrdersContainer" class="orders-table-grid"></div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 style="margin-bottom:14px;">Estabelecimentos Parceiros Cadastrados</h3>
+          <div id="partnerStoresRegistry" class="metrics-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VISÃO 3: DADOS DO PROJETO E CÓDIGO PYTHON OCR (PDF UNINTER)
+         ====================================================================== -->
+    <section id="view-projeto" class="view-panel">
+      <div class="wide-dashboard">
+        <div class="dashboard-card">
+          <h2 style="margin-bottom:6px;">📊 Indicadores do Projeto (UNINTER – ESP)</h2>
+          <p style="color:var(--text-secondary); font-size:0.92rem; margin-bottom:16px;">
+            Resultados obtidos na implementação da Plataforma de Pedidos Acessível:
+          </p>
+
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <div class="metric-val">-80% Digitação</div>
+              <div class="metric-label">Redução do tempo de pedido de 12 minutos para menos de 2 minutos com foto da lista.</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val">90% Autonomia</div>
+              <div class="metric-label">Dos idosos conseguiram finalizar o pedido sem auxílio já na segunda tentativa.</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val">&lt; 3% Erros</div>
+              <div class="metric-label">Queda na taxa de erros dos pedidos nos 3 mercados parceiros (antes 25% por telefone).</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val">Nota 9,1 / 10</div>
+              <div class="metric-label">Satisfação média com a interface limpa e simplificada (24 de 25 pedidos entregues).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 style="margin-bottom:10px;">🐍 Função Python de Leitura de Imagem / OCR (Página 6)</h3>
+          <pre class="code-block-pre">import pytesseract
+from PIL import Image
+
+def ler_lista_compras(caminho_imagem):
+    # Abre a imagem enviada pelo usuário
+    img = Image.open(caminho_imagem)
+    # Configuração para reconhecimento de texto em português
+    configuracao = '--psm 6 -l por'
+    # Extrai o texto da imagem
+    texto_extraido = pytesseract.image_to_string(img, config=configuracao)
+    # Organiza os itens linha por linha
+    itens = [linha.strip() for linha in texto_extraido.split('\n') if linha.strip()]
+    return itens
+
+# Exemplo de uso
+itens_lista = ler_lista_compras("lista_compras_idoso.jpg")
+print("Itens reconhecidos da lista:", itens_lista)</pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

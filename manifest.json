@@ -1,0 +1,10 @@
+{
+  "name": "Compra Fácil Idoso - Plataforma de Pedidos Acessível",
+  "short_name": "Compra Fácil",
+  "description": "Aplicativo acessível de compras de supermercado para idosos residentes sozinhos com leitura de lista manuscrita por foto (OCR).",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFFDF7",
+  "theme_color": "#1B5E20",
+  "orientation": "portrait"
+}
